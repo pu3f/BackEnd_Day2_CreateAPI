@@ -1,11 +1,14 @@
-package com.ideaco.dia;
+package com.ideaco.dia.service;
 
+import com.ideaco.dia.dto.JobDTO;
+import com.ideaco.dia.model.JobModel;
+import com.ideaco.dia.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FirstService {
@@ -17,9 +20,26 @@ public class FirstService {
         return "Sending message "+message;
     }
 
-    //function get job data by id
-    public JobModel getJobById(int jobId) {
-        return jobRepository.findById(jobId).get();
+    public JobDTO getJobById(int jobId){
+        return convertJob(jobRepository.findById(jobId).get());
+    }
+
+    private JobDTO convertJob(JobModel jobModel){
+        //without constructor
+        JobDTO jobDTO = new JobDTO();
+        jobDTO.setJobName(jobModel.getJobName());
+        jobDTO.setJobSalary(jobModel.getJobSalary());
+        return jobDTO;
+
+        //with constructor
+        //return new JobDTO(jobModel.getJobName(), jobModel.getJobSalary());
+    }
+
+    public List<JobDTO> findAllJobs(){
+        List<JobModel> jobModels = jobRepository.findAll();
+
+        return jobModels.stream().map(this::convertJob)
+                .collect(Collectors.toList());
     }
 
     public JobModel getJobByName(String jobName) {
@@ -36,10 +56,6 @@ public class FirstService {
             return null;
         }
         return jobOpt.get();
-    }
-
-    public List<JobModel> findAllJobs() {
-        return jobRepository.findAll();
     }
 
     public List<JobModel> getJobBySalary(int salary) {
