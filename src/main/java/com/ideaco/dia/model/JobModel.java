@@ -1,4 +1,4 @@
-package com.ideaco.dia;
+package com.ideaco.dia.model;
 
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ public class JobModel {
     @Column(name = "job_id")
     private int jobId; //variable in java
     @Column(name = "job_name")
-    private String jobName; //staring=varchar in sql
+    private String jobName; //string=varchar in sql
     @Column(name = "job_desc")
     private String jobDesc;
     @Column(name = "job_salary")
