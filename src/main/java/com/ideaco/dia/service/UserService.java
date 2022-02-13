@@ -1,5 +1,8 @@
-package com.ideaco.dia;
+package com.ideaco.dia.service;
 
+import com.ideaco.dia.dto.UserDTO;
+import com.ideaco.dia.model.UserModel;
+import com.ideaco.dia.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,27 +14,27 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    //get user by id
-    public UserModel getUserById(int userId){
+    //    get user by id
+    public UserModel getUserById(int userId) {
         return userRepository.findById(userId).get();
     }
 
-    //get all users
-    public List<UserModel> findAllUsers(){
+    //    get all users
+    public List<UserModel> findAllUsers() {
         return userRepository.findAll();
     }
 
-    //create user
+    //    create user
     public UserModel createUser(String userName,
                                 String userPassword,
                                 String userEmail,
                                 String userPhone,
                                 String userAddress,
-                                String userResume){
+                                String userResume) {
 
-        //register validate
-        Optional<UserModel> userOpt = userRepository.findByUserEmail(userEmail);
-        if (userOpt.isPresent()){
+//        register validate
+        Optional<UserModel> newUserOpt = userRepository.findByUserEmail(userEmail);
+        if (newUserOpt.isEmpty()) {
             return null;
         }
 
@@ -46,18 +49,21 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    //get user by email
-    public UserModel getUserByEmail(String userEmail){
-        return userRepository.findByUserEmail(userEmail).get();
-    }
 
-    //login validation by user email & password
-    public UserModel getUserByEmailAndPassword(String userEmail, String userPassword){
-        Optional<UserModel> userOpt = userRepository.findByUserEmailAndUserPassword(userEmail, userPassword);
-        if (userOpt.isEmpty()){
+//    login validation by user email & password
+    public UserDTO userLogin(String userEmail, String userPassword){
+        Optional<UserModel> userOpt = userRepository.findUserLogin(userEmail, userPassword);
+        if (userOpt.isEmpty()) {
             return null;
         }
-        return userOpt.get();
+        return convertToDTO(userOpt.get());
+    }
+
+//    using UserDTO
+    private UserDTO convertToDTO(UserModel userModel) {
+
+//        new UserDTO with constructor
+        return new UserDTO(userModel.getUserEmail(), userModel.getUserPassword());
     }
 
 }
